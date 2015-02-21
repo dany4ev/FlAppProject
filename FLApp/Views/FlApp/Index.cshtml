@@ -1,0 +1,47 @@
+﻿@model List<FLApp.Models.News>
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="wrap">
+    <div id="container">
+        @{
+            if (Model != null)
+            {
+                foreach (var item in Model)
+                {
+                    <div class="items">
+                        <img src="@item.ImgUrl"/>
+                        <p>@item.Content</p>
+                    </div>
+                }
+            }
+        }
+    </div>
+</div>
+
+@section scripts
+{
+    <script src="~/Scripts/masonry.pkgd.min.js"></script>
+    <script src="~/Scripts/imagesloaded.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var container = $('#container .items');
+            var masonryContainer = $('#container');
+            container.imagesLoaded(function () {
+                container.fadeIn();
+                masonryContainer.masonry({
+                    itemSelector: '.items',
+                    isAnimated: true
+                });
+            });
+        });
+    </script>
+}
+
+<div style="display: none;">
+    http://www.programering.com/a/MzNzQDNwATA.html
+    http://techbrij.com/asp-net-pinterest-infinite-scroll-jquery-masonry
+</div>
