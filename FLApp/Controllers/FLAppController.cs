@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
@@ -13,7 +14,13 @@ namespace FLApp.Controllers
             return View(GetAllNews());
         }
 
-        private List<News> GetAllNews()
+        private string GetContent()
+        {
+            return string.Format("A four year cycle in summer, football fans Festival, today, to review the 1990 Italy summer.");
+        }
+
+        [HttpGet]
+        private IEnumerable<News> GetAllNews()
         {
             var path = Server.MapPath("images");
             var di = new DirectoryInfo(path);
@@ -21,42 +28,8 @@ namespace FLApp.Controllers
             return di.GetFiles().Select(name => new News
             {
                 ImgUrl = string.Format("images/{0}", name.Name),
-                Content = "A four year cycle in summer, football fans Festival, today, to review the 1990 Italy summer."
-            }).ToList();
-
-            //return new List<News>
-            //{
-            //    new News
-            //    {
-            //        ImgUrl = "images/00b2d8084165c920dee5b19c7b46033b.jpg",
-            //        Content = "A four year cycle in summer, football fans Festival, today, to review the 1990 Italy summer. "
-            //    },
-            //    new News
-            //    {
-            //        ImgUrl = "images/00b2d8084165c920dee5b19c7b46033b.jpg",
-            //        Content = "A four year cycle in summer, football fans Festival, today, to review the 1990 Italy summer. "
-            //    },
-            //    new News
-            //    {
-            //        ImgUrl = "images/00b2d8084165c920dee5b19c7b46033b.jpg",
-            //        Content = "A four year cycle in summer, football fans Festival, today, to review the 1990 Italy summer. "
-            //    },
-            //    new News
-            //    {
-            //        ImgUrl = "images/00b2d8084165c920dee5b19c7b46033b.jpg",
-            //        Content = "A four year cycle in summer, football fans Festival, today, to review the 1990 Italy summer. "
-            //    },
-            //    new News
-            //    {
-            //        ImgUrl = "images/00b2d8084165c920dee5b19c7b46033b.jpg",
-            //        Content = "A four year cycle in summer, football fans Festival, today, to review the 1990 Italy summer. "
-            //    },
-            //    new News
-            //    {
-            //        ImgUrl = "images/00b2d8084165c920dee5b19c7b46033b.jpg",
-            //        Content = "A four year cycle in summer, football fans Festival, today, to review the 1990 Italy summer. "
-            //    },
-            //};
+                Content = GetContent()
+            });
         }
 
         [HttpGet]

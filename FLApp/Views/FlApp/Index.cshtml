@@ -1,4 +1,4 @@
-﻿@model List<FLApp.Models.News>
+﻿@model IEnumerable<FLApp.Models.News>
 
 @{
     ViewBag.Title = "Index";
@@ -12,9 +12,14 @@
             {
                 foreach (var item in Model)
                 {
+                    var rnd = new Random().Next();
                     <div class="items">
-                        <img src="@item.ImgUrl"/>
-                        <p>@item.Content</p>
+                        <div id='@rnd-randomId'>
+                            <a href="#" class="openGallery">
+                                <img src="@item.ImgUrl" alt="@item.ImgUrl" />
+                            </a>
+                        </div>
+                        <p class="content">@item.Content</p>
                     </div>
                 }
             }
@@ -34,7 +39,18 @@
                 container.fadeIn();
                 masonryContainer.masonry({
                     itemSelector: '.items',
-                    isAnimated: true
+                    isAnimated: true,
+                    //columnWidth: 25
+                });
+                //masonryContainer.masonry('appended', container, true);
+                masonryContainer.infinitescroll({
+                    // infinite scroll options...
+
+                },
+                // trigger Masonry as a callback
+                function (newElements) {
+                    var $newElems = $(newElements);
+                    masonryContainer.masonry('appended', $newElems);
                 });
             });
         });
@@ -42,6 +58,7 @@
 }
 
 <div style="display: none;">
+    http://desandro.github.io/masonry/docs/methods.html#appended
     http://www.programering.com/a/MzNzQDNwATA.html
     http://techbrij.com/asp-net-pinterest-infinite-scroll-jquery-masonry
 </div>
