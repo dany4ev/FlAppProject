@@ -11,7 +11,8 @@ namespace FLApp.Controllers
     {
         public ActionResult Index()
         {
-            return View(GetAllNews());
+            //return View(GetAllNews());
+            return View(GetData(1,25));
         }
 
         private string GetContent()
@@ -32,7 +33,7 @@ namespace FLApp.Controllers
             });
         }
 
-        [HttpGet]
+        [HttpPost]
         public static IEnumerable<Product> GetData(int pageNo, int pageSize)
         {
             return ProductRepository.GetData(pageNo, pageSize);

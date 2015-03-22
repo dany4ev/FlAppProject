@@ -1,58 +1,125 @@
-﻿@model IEnumerable<FLApp.Models.News>
-
+﻿@*@model IEnumerable<FLApp.Models.News>*@
+@model IEnumerable<FLApp.Models.Product>
 @{
     ViewBag.Title = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div id="wrap">
-    <div id="container">
-        @{
-            if (Model != null)
-            {
-                foreach (var item in Model)
+@*<div id="wrap">
+        <div id="container">
+            @{
+                if (Model != null)
                 {
-                    var rnd = new Random().Next();
-                    <div class="items">
-                        <div id='@rnd-randomId'>
-                            <a href="#" class="openGallery">
-                                <img src="@item.ImgUrl" alt="@item.ImgUrl" />
-                            </a>
+                    foreach (var item in Model)
+                    {
+                        var rnd = new Random().Next();
+                        <div class="items">
+                            <div id='@rnd-randomId'>
+                                <a href="#" class="openGallery">
+                                    <img src="@item.ImgUrl" alt="@item.ImgUrl" />
+                                </a>
+                            </div>
+                            <p class="content">@item.Content</p>
                         </div>
-                        <p class="content">@item.Content</p>
-                    </div>
+                    }
                 }
+            }
+        </div>
+    </div>*@
+<div class="container body-content">
+    <div id="container" class="transitions-enabled infinite-scroll clearfix">
+        @{
+            foreach (var item in Model)
+            {
+                <div class="box">
+                    <a href="#" class="">
+                        <img src="@item.Url" />
+                    </a>
+                    <p>@item.Description</p>
+                </div>
             }
         }
     </div>
+    <div id="imgLoad">
+        <img src="http://i.imgur.com/6RMhx.gif" />
+    </div>
+
 </div>
+
 
 @section scripts
 {
     <script src="~/Scripts/masonry.pkgd.min.js"></script>
     <script src="~/Scripts/imagesloaded.min.js"></script>
     <script type="text/javascript">
-        $(function () {
-            var container = $('#container .items');
-            var masonryContainer = $('#container');
-            container.imagesLoaded(function () {
-                container.fadeIn();
-                masonryContainer.masonry({
-                    itemSelector: '.items',
-                    isAnimated: true,
-                    //columnWidth: 25
-                });
-                //masonryContainer.masonry('appended', container, true);
-                masonryContainer.infinitescroll({
-                    // infinite scroll options...
+        //$(function () {
+        //    var container = $('#container .items');
+        //    var masonryContainer = $('#container');
+        //    container.imagesLoaded(function () {
+        //        container.fadeIn();
+        //        masonryContainer.masonry({
+        //            itemSelector: '.items',
+        //            isAnimated: true
+        //        });
+        //    });
+        //});
 
-                },
-                // trigger Masonry as a callback
-                function (newElements) {
-                    var $newElems = $(newElements);
-                    masonryContainer.masonry('appended', $newElems);
+        $(function () {
+
+            var $container = $('#container');
+
+            $container.imagesLoaded(function () {
+                $container.masonry({
+                    itemSelector: '.box',
+                    columnWidth: 100,
+                    isAnimated: true
                 });
             });
+
+        });
+
+        var pageNo = 1, pageSize = 25;
+
+        function loadMore() {
+
+            var $container = $('#container');
+
+            $('#imgLoad').show();
+
+            $.ajax({
+                type: "POST",
+                url: "FLApp/GetData",
+                data: JSON.stringify({ pageNo: pageNo + 1, pageSize: pageSize }),
+                dataType: "json",
+                contentType: "application/json",
+                complete: function (response) {
+                    console.log("Response: " + response);
+                    $('#imgLoad').hide();
+                },
+                success: function (response) {
+                    if (response.d.length > 0) {
+                        var ctrls = [];
+                        for (var i = 0; i < response.d.length; i++) {
+                            ctrls.push('<div class="box"><a href="#" class=""><img src="' + response.d[i].Url + '" /></a><p>' + response.d[i].Description + '</p></div>');
+                        }
+                        var $newElems = $(ctrls.join(''));
+                        $container.append($newElems);
+                        $newElems.css({ opacity: 0 });
+                        $newElems.imagesLoaded(function () {
+                            // show elems now they're ready
+                            $newElems.css({ opacity: 1 });
+                            $container.masonry('appended', $newElems, true);
+                        });
+                        pageNo++;
+                    }
+                }
+            });
+        }
+
+        $(window).scroll(function () {
+            if ($(window).scrollTop() === $(document).height() - $(window).height() && !($('#imgLoad').is(':visible'))) {
+                loadMore();
+            }
         });
     </script>
 }
